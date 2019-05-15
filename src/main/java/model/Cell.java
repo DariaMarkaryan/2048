@@ -1,14 +1,18 @@
 package model;
+import java.util.stream.Collectors;
+import java.util.function.Function;
+import java.util.Map;
+import java.util.Arrays;
 
 public class Cell {
     private Values value;
     private boolean isMerged = false;
 
-    public void setMerged(boolean status){
+    public void setMerged(boolean status) {
         this.isMerged = status;
     }
 
-    public boolean isMerged(){
+    public boolean isMerged() {
         return isMerged;
     }
 

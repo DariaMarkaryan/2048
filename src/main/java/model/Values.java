@@ -1,5 +1,7 @@
 package model;
 
+import java.util.*;
+
 public enum Values {
     EMPTY(0),
     TWO(2),
@@ -21,5 +23,17 @@ public enum Values {
 
     int getNumberOnCell(){
         return numberOnCell;
+    }
+
+    private static final Map<Integer,Values> map;
+    static {
+        map = new HashMap<>();
+        for (Values v : Values.values()) {
+            map.put(v.numberOnCell, v);
+        }
+    }
+
+    public static Values findByKey(int i) {
+        return map.get(i);
     }
 }
