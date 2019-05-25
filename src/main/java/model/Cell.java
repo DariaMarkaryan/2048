@@ -1,8 +1,4 @@
 package model;
-import java.util.stream.Collectors;
-import java.util.function.Function;
-import java.util.Map;
-import java.util.Arrays;
 
 public class Cell {
     private Values value;
