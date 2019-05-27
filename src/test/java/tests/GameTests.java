@@ -11,7 +11,7 @@ class GameTests {
 
     @Test
     void test() {
-        field.restart();
+        field.startGame();
         assertEquals(Values.EMPTY, field.getCell(1,2).getValue());
     }
 }

@@ -1,11 +1,11 @@
 package model;
 
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 public class Field {
     private model.Cell[][] cells = new model.Cell[4][4];
     private int score;
-    private boolean isWin;
     private int emptyCells = 4 * 4;
 
     public void startGame() {
@@ -46,29 +46,34 @@ public class Field {
     }
 
     public void moveCells(int key){
+        Cell[][] obsolete = this.getCellsGhost();
     this.unmixAll();
         switch (key) {
             case KeyEvent.VK_UP: {
                 Up();
-                createRandomCell();
+                if(!Arrays.deepEquals(cells, obsolete))
+                    createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_DOWN: {
                 Down();
-                createRandomCell();
+                if(!Arrays.deepEquals(cells, obsolete))
+                    createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_LEFT: {
                 Left();
-                createRandomCell();
+                if(!Arrays.deepEquals(cells, obsolete))
+                    createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_RIGHT: {
                 Right();
-                createRandomCell();
+                if(!Arrays.deepEquals(cells, obsolete))
+                    createRandomCell();
                 break;
             }
         }
