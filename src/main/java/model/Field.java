@@ -238,10 +238,12 @@ public class Field {
     }
 
     private boolean isFail(){
-            return emptyCells == 1;
+            return emptyCells == 0;
     }
 
-    private void endGame(){}
+    public Cell[][] getCells(){
+        return cells;
+    }
 
     public void printField(){
         for(int i = 0; i < 4; i++) {
@@ -255,4 +257,6 @@ public class Field {
             System.out.println();
         }
     }
+
+    public void endGame(){}
 }
