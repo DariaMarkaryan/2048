@@ -4,14 +4,9 @@ import java.awt.event.KeyEvent;
 
 public class Field {
     private model.Cell[][] cells = new model.Cell[4][4];
-    private model.Cell[][] obsoleteCells = getCellsGhost();
     private int score;
     private boolean isWin;
     private int emptyCells = 4 * 4;
-
-    public Cell[][] getCells(){
-        return cells;
-    }
 
     public void startGame() {
         score = 0;
@@ -51,8 +46,6 @@ public class Field {
     }
 
     public void moveCells(int key){
-        this.obsoleteCells = getCellsGhost(); // для отката хода
-
     this.unmixAll();
         switch (key) {
             case KeyEvent.VK_UP: {
@@ -240,11 +233,9 @@ public class Field {
     private Cell[][] getCellsGhost(){
         Cell[][] ghost = new Cell[4][4];
         for(int i = 0; i < 4; i++)
-            System.arraycopy(cells[i], 0, ghost[i], 0, 4);
+            System.arraycopy(this.cells[i], 0, ghost[i], 0, 4);
             return ghost;
     }
-
-    public void undo(){ cells = obsoleteCells; }
 
     private boolean isFail(){
             return emptyCells == 1;
