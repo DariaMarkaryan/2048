@@ -3,19 +3,21 @@ package model;
 import java.awt.event.KeyEvent;
 
 public class Field {
-    private model.Cell[][] cells = new model.Cell[4][4];
+    public final static int SIZE = 4;
+    private Cell[][] cells = new Cell[SIZE][SIZE];
     private int score;
-    private boolean isWin;
-    private int emptyCells = 4 * 4;
+    private int emptyCells = SIZE * SIZE;
+
+    public Field(){
+    }
 
     public void startGame() {
         score = 0;
-        emptyCells = 4 * 4;
+        emptyCells = SIZE * SIZE;
 
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++) {
-                cells[i][j] = new Cell();
-                cells[i][j].setValue(Values.EMPTY);
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++) {
+                cells[i][j] = new Cell(Values.EMPTY);
             }
             createRandomCell();
             createRandomCell();
@@ -26,12 +28,12 @@ public class Field {
     }
 
     private void createRandomCell() {
-            Cell cell = cells[(int)(Math.random()*4)][(int)(Math.random()*4)];
+            Cell cell = cells[(int)(Math.random() * SIZE )][(int)(Math.random() * SIZE)];
 
             while (!cell.isEmpty()) {
-                cell = cells[(int)(Math.random()*4)][(int)(Math.random()*4)];
+                cell = cells[(int)(Math.random() * SIZE)][(int)(Math.random() * SIZE)];
             }
-            if(Math.random() >= 0.0 && Math.random()<= 0.9){    //вероятность получить значение 2 в клетке = 0.9
+            if(Math.random() >= 0.0 && Math.random() <= 0.9){    //вероятность получить значение 2 в клетке = 0.9
                 cell.setValue(Values.TWO);
             } else {
                 cell.setValue(Values.FOUR);
@@ -40,8 +42,8 @@ public class Field {
     }
 
     private void unmixAll(){
-        for(int i = 0; i < 3 ; i++)
-            for(int j = 0; j < 3 ; j ++)
+        for(int i = 0; i < SIZE - 1 ; i++)
+            for(int j = 0; j < SIZE - 1 ; j ++)
                 cells[i][j].setMerged(false);
     }
 
@@ -49,25 +51,25 @@ public class Field {
     this.unmixAll();
         switch (key) {
             case KeyEvent.VK_UP: {
-                Up();
+                up();
                 createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_DOWN: {
-                Down();
+                down();
                 createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_LEFT: {
-                Left();
+                left();
                 createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_RIGHT: {
-                Right();
+                right();
                 createRandomCell();
                 break;
             }
@@ -78,7 +80,7 @@ public class Field {
     this.unmixAll();
     }
 
-    private void Up() {
+    private void up() {
         for(int i = 0; i < 4; i++) {
             for(int j = 1; j < 4; j++){
                 Cell temp = cells[j][i];
@@ -113,10 +115,10 @@ public class Field {
                 }
             }
         }
-    }
+        }
     }
 
-    private void Down(){
+    private void down(){
         for(int i = 0; i < 4; i++) {
             for(int j = 2; j >= 0; j--){
                 Cell temp = cells[j][i];
@@ -154,7 +156,7 @@ public class Field {
             }
         }
 
-    private void Right(){
+    private void right(){
         for(int i = 0; i < 4; i++) {
             for(int j = 2; j >= 0; j--){
                 Cell temp = cells[i][j];
@@ -192,7 +194,7 @@ public class Field {
         }
     }
 
-    private void Left(){
+    private void left(){
         for(int i = 0; i < 4; i++) {
             for(int j = 1; j < 4; j++){
                 Cell temp = cells[i][j];
@@ -230,13 +232,6 @@ public class Field {
         }
     }
 
-    private Cell[][] getCellsGhost(){
-        Cell[][] ghost = new Cell[4][4];
-        for(int i = 0; i < 4; i++)
-            System.arraycopy(this.cells[i], 0, ghost[i], 0, 4);
-            return ghost;
-    }
-
     private boolean isFail(){
             return emptyCells == 0;
     }
@@ -246,8 +241,8 @@ public class Field {
     }
 
     public void printField(){
-        for(int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        for(int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (cells[i][j].getValue() == Values.EMPTY) {
                     System.out.print('*');
                 } else {
@@ -257,6 +252,5 @@ public class Field {
             System.out.println();
         }
     }
-
     public void endGame(){}
 }

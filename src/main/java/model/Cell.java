@@ -4,15 +4,22 @@ public class Cell {
     private Values value;
     private boolean isMerged = false;
 
+    public Cell(Values value){
+        this.value = value;
+    }
+
     public void setMerged(boolean status) {
+
         this.isMerged = status;
     }
 
     public boolean isMerged() {
+
         return isMerged;
     }
 
     public Values getValue() {
+
         return value;
     }
 
@@ -21,6 +28,7 @@ public class Cell {
     }
 
     public boolean isEmpty() {
+
         return this.value == Values.EMPTY;
     }
 }

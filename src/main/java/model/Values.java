@@ -18,10 +18,12 @@ public enum Values {
     int numberOnCell;
 
     Values(int numberOnCell){
+
         this.numberOnCell = numberOnCell;
     }
 
     int getNumberOnCell(){
+
         return numberOnCell;
     }
 
@@ -33,7 +35,8 @@ public enum Values {
         }
     }
 
-    public static Values findByKey(int i) {
+    public static Values findByKey(int i)
+    {
         return map.get(i);
     }
 }
