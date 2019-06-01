@@ -185,7 +185,7 @@ public class Field {
                         cells[x][i].setValue(cells[j][i].getValue());
                         cells[j][i].setValue(Values.EMPTY);
                         break;
-                       }
+                      }
                     }
                   }
                 }
