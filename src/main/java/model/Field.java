@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Arrays;
 import java.awt.event.KeyEvent;
 
 public class Field {
@@ -156,6 +157,48 @@ public class Field {
             }
         }
 
+        /*
+        *
+        *
+        *  private void down() {
+        for(int i = 0; i < SIZE; i++){
+
+             for(int j = SIZE - 2; j >= 0; j--) {
+                 if(cells[j][i].getValue() != Values.EMPTY){
+
+                    for (int x = j + 1; x < SIZE; x++) {
+                        if(cells[x][i].getValue() != Values.EMPTY){
+                            //находим первую непустую и делаем что то с cells[j][i]
+                            if(cells[x][i].getValue() == cells[j][i].getValue() && !cells[x][i].isMerged()){
+                                cells[x][i].setValue(Values.findByKey(cells[j][i].getValue().getNumberOnCell() * 2));
+                                cells[x][i].setMerged(true);
+                                cells[j][i].setValue(Values.EMPTY);
+                            }
+                            if((cells[x][i].getValue() != cells[j][i].getValue() || cells[x][i].isMerged()) && x - 1 != j){
+                                cells[x - 1][i].setValue(cells[j][i].getValue());
+                                cells[j][i].setValue(Values.EMPTY);
+                            }
+                            break;
+                        }
+                        if(x == 3 && cells[x][i].getValue() == Values.EMPTY) {
+                            // если дошли до низа и не встретили непустую, то туда будем пихать cells[j][i]
+                        cells[x][i].setValue(cells[j][i].getValue());
+                        cells[j][i].setValue(Values.EMPTY);
+                        break;
+                        }
+                    }
+                 }
+                }
+            }
+        for(int t = 0; t < SIZE; t++)
+            for(int j = 0; j < SIZE; j++){
+                cells[j][t].setMerged(false);
+                }
+        }
+        *
+        * */
+
+
     private void right(){
         for(int i = 0; i < 4; i++) {
             for(int j = 2; j >= 0; j--){
@@ -233,7 +276,19 @@ public class Field {
     }
 
     private boolean isFail(){
-            return emptyCells == 0;
+            final  Cell[][] oldCells = cells;
+            boolean isEquals = false;
+
+            moveCells(KeyEvent.VK_UP);
+            moveCells(KeyEvent.VK_DOWN);
+            moveCells(KeyEvent.VK_LEFT);
+            moveCells(KeyEvent.VK_RIGHT);
+
+            if(Arrays.deepEquals(oldCells, cells))
+                isEquals = true;
+            else
+                cells = oldCells;
+            return isEquals;
     }
 
     public Cell[][] getCells(){
