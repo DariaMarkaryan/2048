@@ -16,6 +16,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import model.Field;
+import model.KeyValue;
+
+import static javafx.scene.input.KeyCode.*;
 import static model.Field.SIZE;
 
 public class View extends Application {
@@ -48,7 +51,7 @@ public class View extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         Field field = new Field();
         field.startGame();
         BorderPane root = new BorderPane();
@@ -60,10 +63,20 @@ public class View extends Application {
         Menu scorePlace = new Menu("score = " + field.score);
 
         MenuItem newGameItem = new MenuItem("New Game");
-        MenuItem replayItem = new MenuItem("Replay");
+
+        newGameItem.setOnAction(e -> {
+           gridPane.getChildren().clear();
+           field.startGame();
+            for (int j = 0; j < SIZE; j++)
+                for (int i = 0; i < SIZE; i++) {
+                    if (!field.getCells()[j][i].isEmpty())
+                        gridPane.add(new Tile(field.getCells()[j][i].getValue().getNumberOnCell()), i, j);
+                }
+            field.score = 0;
+        });
 
         root.setTop(menuBar);
-        menu.getItems().addAll(newGameItem, replayItem);
+        menu.getItems().addAll(newGameItem);
         menuBar.getMenus().addAll(menu, scorePlace);
 
         createGrids(gridPane);
@@ -76,10 +89,10 @@ public class View extends Application {
 
         Scene scene = new Scene(root, 400, 400);
         scene.setOnKeyPressed(event -> {
-            if ((event.getCode().equals(KeyCode.UP) ||
-                    event.getCode().equals(KeyCode.DOWN) ||
-                    event.getCode().equals(KeyCode.LEFT) ||
-                    event.getCode().equals(KeyCode.RIGHT))){
+            if ((event.getCode().equals(UP) ||
+                    event.getCode().equals(DOWN) ||
+                    event.getCode().equals(LEFT) ||
+                    event.getCode().equals(RIGHT))){
                 field.emptyCells = SIZE * SIZE;
 
                 for (int j = 0; j < SIZE; j++)
@@ -88,7 +101,24 @@ public class View extends Application {
                             field.emptyCells--;
                         }
                     }
-                field.moveCells(event.getCode().getCode());
+                switch (event.getCode()){
+                    case UP:{
+                        field.moveCells(KeyValue.UP);
+                        break;
+                    }
+                    case DOWN:{
+                        field.moveCells(KeyValue.DOWN);
+                        break;
+                    }
+                    case LEFT:{
+                        field.moveCells(KeyValue.LEFT);
+                        break;
+                    }
+                    case RIGHT:{
+                        field.moveCells(KeyValue.RIGHT);
+                        break;
+                    }
+                }
 
                 gridPane.getChildren().clear();
             createGrids(gridPane);
@@ -126,16 +156,42 @@ public class View extends Application {
         Tile(int value) {
             this.value = value;
             Rectangle rect = new Rectangle(SQUARE_SCALE, SQUARE_SCALE);
-            rect.setStroke(Color.ROSYBROWN);
-            rect.setFill(Color.THISTLE);
+            rect.setStroke(Color.THISTLE);
+            rect.setFill(fillColor(this.value));
             Text text = new Text();
             text.setText(Integer.toString(value));
             text.setFont(Font.font("Verdana", 50));
             text.setFill(Color.INDIGO);
             getChildren().addAll(rect, text);
         }
+
+        private Color fillColor(int value){
+            Color color = Color.BISQUE;
+
+            if(value == 2)
+                color = Color.LIGHTCYAN;
+            if(value == 4)
+                color = Color.LEMONCHIFFON;
+            if(value == 8)
+                color = Color.PAPAYAWHIP;
+            if(value == 16)
+                color = Color.DARKSALMON;
+            if(value == 32)
+                color = Color.TAN;
+            if(value == 64)
+                color = Color.CHOCOLATE;
+            if(value == 128)
+                color = Color.DODGERBLUE;
+            if(value == 256)
+                color = Color.MEDIUMPURPLE;
+            if(value == 512)
+                color = Color.DARKVIOLET;
+            if(value == 1024)
+                color = Color.ORANGERED;
+            if(value == 2048)
+                color = Color.DARKRED;
+
+            return color;
+        }
     }
 }
-/*
- *
- * */

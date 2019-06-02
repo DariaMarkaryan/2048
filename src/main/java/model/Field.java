@@ -2,6 +2,8 @@ package model;
 
 import java.util.Arrays;
 import java.awt.event.KeyEvent;
+import static model.KeyValue.*;
+
 
 public class Field {
     public final static int SIZE = 4;
@@ -45,24 +47,24 @@ public class Field {
                 cells[i][j].setMerged(false);
     }
 
-    public void moveCells(int key){
-        switch (key) {
-            case KeyEvent.VK_UP: {
+    public void moveCells(KeyValue kv){
+        switch (kv) {
+            case UP: {
                 up();
                 break;
             }
 
-            case KeyEvent.VK_DOWN: {
+            case DOWN: {
                 down();
                 break;
             }
 
-            case KeyEvent.VK_LEFT: {
+            case LEFT: {
                 left();
                 break;
             }
 
-            case KeyEvent.VK_RIGHT: {
+            case RIGHT: {
                 right();
                 break;
             }
