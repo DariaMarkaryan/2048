@@ -6,11 +6,9 @@ import java.awt.event.KeyEvent;
 public class Field {
     public final static int SIZE = 4;
     private Cell[][] cells = new Cell[SIZE][SIZE];
-    private int score;
-    private int emptyCells = SIZE * SIZE;
-
-    public Field(){
-    }
+    public int score = 0;
+    public int emptyCells = SIZE * SIZE;
+    public boolean isFail = false;
 
     public void startGame() {
         score = 0;
@@ -39,140 +37,57 @@ public class Field {
             } else {
                 cell.setValue(Values.FOUR);
             }
-            emptyCells--;
     }
 
-    private void unmixAll(){
-        for(int i = 0; i < SIZE - 1 ; i++)
-            for(int j = 0; j < SIZE - 1 ; j ++)
+    private void unmergeAll(){
+        for(int i = 0; i < SIZE ; i++)
+            for(int j = 0; j < SIZE ; j ++)
                 cells[i][j].setMerged(false);
     }
 
     public void moveCells(int key){
-    this.unmixAll();
         switch (key) {
             case KeyEvent.VK_UP: {
                 up();
-                createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_DOWN: {
                 down();
-                createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_LEFT: {
                 left();
-                createRandomCell();
                 break;
             }
 
             case KeyEvent.VK_RIGHT: {
                 right();
-                createRandomCell();
                 break;
             }
         }
-            if(isFail()) {
-                endGame();
-            }
-    this.unmixAll();
+            if(emptyCells == 0)
+                        if(endGame())
+                            isFail = true;
+
+        if(emptyCells != 0)
+            createRandomCell();
+
+        this.unmergeAll();
     }
 
-    private void up() {
-        for(int i = 0; i < 4; i++) {
-            for(int j = 1; j < 4; j++){
-                Cell temp = cells[j][i];
-
-                if(temp.getValue() != Values.EMPTY){
-                    Cell ktemp;
-                    int whereIsK = j - 1;
-
-                    for(int k = j - 1; k >= 0; k--){
-                        if(cells[k][i].getValue() != Values.EMPTY) {
-                            whereIsK = k;
-                            break;
-                        }
-                    whereIsK = k;
-                }
-                    ktemp = cells[whereIsK][i];
-
-                if(ktemp.getValue() !=  Values.EMPTY) {
-                    if (ktemp.getValue() == temp.getValue() && !ktemp.isMerged()) {
-                        ktemp.setValue(Values.findByKey(temp.getValue().getNumberOnCell() * 2));
-                        ktemp.setMerged(true);
-                        temp.setValue(Values.EMPTY);
-                        emptyCells--;
-                        score += temp.getValue().getNumberOnCell();
-                    } else {
-                        cells[whereIsK + 1][i].setValue(temp.getValue());
-                        temp.setValue(Values.EMPTY);
-                    }
-                } else {
-                    ktemp.setValue(temp.getValue());
-                    temp.setValue(Values.EMPTY);
-                }
-            }
-        }
-        }
-    }
-
-    private void down(){
-        for(int i = 0; i < 4; i++) {
-            for(int j = 2; j >= 0; j--){
-                Cell temp = cells[j][i];
-
-                if(temp.getValue() != Values.EMPTY){
-                    Cell ktemp;
-                    int whereIsK = j + 1;
-
-                    for(int k = j + 1; k < 4; k++){
-                       if(cells[k][i].getValue() != Values.EMPTY) {
-                           whereIsK = k;
-                           break;
-                       }
-                       whereIsK = k;
-                   }
-                    ktemp = cells[whereIsK][i];
-
-                       if(ktemp.getValue() !=  Values.EMPTY) {
-                           if (ktemp.getValue() == temp.getValue() && !ktemp.isMerged()) {
-                               ktemp.setValue(Values.findByKey(temp.getValue().getNumberOnCell() * 2));
-                               ktemp.setMerged(true);
-                               temp.setValue(Values.EMPTY);
-                               emptyCells--;
-                               score += temp.getValue().getNumberOnCell();
-                           } else {
-                               cells[whereIsK - 1][i].setValue(temp.getValue());
-                               temp.setValue(Values.EMPTY);
-                           }
-                       } else {
-                            ktemp.setValue(temp.getValue());
-                            temp.setValue(Values.EMPTY);
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
-        *
-        *
-        *  private void down() {
+    private void down() {
         for(int i = 0; i < SIZE; i++){
-
-             for(int j = SIZE - 2; j >= 0; j--) {
-                 if(cells[j][i].getValue() != Values.EMPTY){
-
+            for(int j = SIZE - 2; j >= 0; j--) {
+                if(cells[j][i].getValue() != Values.EMPTY){
                     for (int x = j + 1; x < SIZE; x++) {
                         if(cells[x][i].getValue() != Values.EMPTY){
-                            //находим первую непустую и делаем что то с cells[j][i]
                             if(cells[x][i].getValue() == cells[j][i].getValue() && !cells[x][i].isMerged()){
                                 cells[x][i].setValue(Values.findByKey(cells[j][i].getValue().getNumberOnCell() * 2));
                                 cells[x][i].setMerged(true);
                                 cells[j][i].setValue(Values.EMPTY);
+                                score += cells[x][i].getValue().numberOnCell;
                             }
                             if((cells[x][i].getValue() != cells[j][i].getValue() || cells[x][i].isMerged()) && x - 1 != j){
                                 cells[x - 1][i].setValue(cells[j][i].getValue());
@@ -181,114 +96,114 @@ public class Field {
                             break;
                         }
                         if(x == 3 && cells[x][i].getValue() == Values.EMPTY) {
-                            // если дошли до низа и не встретили непустую, то туда будем пихать cells[j][i]
-                        cells[x][i].setValue(cells[j][i].getValue());
-                        cells[j][i].setValue(Values.EMPTY);
-                        break;
-                      }
+                            cells[x][i].setValue(cells[j][i].getValue());
+                            cells[j][i].setValue(Values.EMPTY);
+                            break;
+                        }
                     }
-                  }
                 }
             }
-        for(int t = 0; t < SIZE; t++)
-            for(int j = 0; j < SIZE; j++){
-                cells[j][t].setMerged(false);
-                }
         }
-        *
-        * */
-
+    }
 
     private void right(){
-        for(int i = 0; i < 4; i++) {
-            for(int j = 2; j >= 0; j--){
-                Cell temp = cells[i][j];
-
-                if(temp.getValue() != Values.EMPTY){
-                    Cell ktemp;
-                    int whereIsK = j + 1;
-
-                    for(int k = j + 1; k < 4; k++){
-                        if(cells[i][k].getValue() != Values.EMPTY) {
-                            whereIsK = k;
+        for(int i = 0; i < SIZE; i++){
+            for(int j = SIZE - 2; j >= 0; j--) {
+                if(cells[i][j].getValue() != Values.EMPTY){
+                    for (int x = j + 1; x < SIZE; x++) {
+                        if(cells[i][x].getValue() != Values.EMPTY){
+                            if(cells[i][x].getValue() == cells[i][j].getValue() && !cells[i][x].isMerged()){
+                                cells[i][x].setValue(Values.findByKey(cells[i][j].getValue().getNumberOnCell() * 2));
+                                cells[i][x].setMerged(true);
+                                cells[i][j].setValue(Values.EMPTY);
+                                score += cells[i][x].getValue().getNumberOnCell();
+                            }
+                            if((cells[i][x].getValue() != cells[i][j].getValue() || cells[i][x].isMerged()) && x - 1 != j){
+                                cells[i][x - 1].setValue(cells[i][j].getValue());
+                                cells[i][j].setValue(Values.EMPTY);
+                            }
                             break;
                         }
-                        whereIsK = k;
-                    }
-                    ktemp = cells[i][whereIsK];
-
-                    if(ktemp.getValue() !=  Values.EMPTY) {
-                        if (ktemp.getValue() == temp.getValue() && !ktemp.isMerged()) {
-                            ktemp.setValue(Values.findByKey(temp.getValue().getNumberOnCell() * 2));
-                            ktemp.setMerged(true);
-                            temp.setValue(Values.EMPTY);
-                            emptyCells--;
-                            score += temp.getValue().getNumberOnCell();
-                        } else {
-                            cells[i][whereIsK - 1].setValue(temp.getValue());
-                            temp.setValue(Values.EMPTY);
+                        if(x == 3 && cells[i][x].getValue() == Values.EMPTY) {
+                            cells[i][x].setValue(cells[i][j].getValue());
+                            cells[i][j].setValue(Values.EMPTY);
+                            break;
                         }
-                    } else {
-                        ktemp.setValue(temp.getValue());
-                        temp.setValue(Values.EMPTY);
                     }
                 }
             }
         }
     }
 
-    private void left(){
-        for(int i = 0; i < 4; i++) {
-            for(int j = 1; j < 4; j++){
-                Cell temp = cells[i][j];
+    private void left() {
+        for(int i = 0; i < SIZE; i++){
+            for(int j = 1; j < SIZE; j++) {
+                if(cells[i][j].getValue() != Values.EMPTY){
+                    for (int x = j - 1; x >= 0 ; x--) {
+                        if(cells[i][x].getValue() != Values.EMPTY){
+                            if(cells[i][x].getValue() == cells[i][j].getValue() && !cells[i][x].isMerged()){
+                                cells[i][x].setValue(Values.findByKey(cells[i][j].getValue().getNumberOnCell() * 2));
+                                cells[i][x].setMerged(true);
+                                cells[i][j].setValue(Values.EMPTY);
+                                score += cells[i][x].getValue().getNumberOnCell();
+                            }
 
-                if(temp.getValue() != Values.EMPTY){
-                    Cell ktemp;
-                    int whereIsK = j - 1;
-
-                    for(int k = j - 1; k >= 0; k--){
-                        if(cells[i][k].getValue() != Values.EMPTY) {
-                            whereIsK = k;
+                            if((cells[i][x].getValue() != cells[i][j].getValue() || cells[i][x].isMerged()) && x + 1 != j){
+                                cells[i][x + 1].setValue(cells[i][j].getValue());
+                                cells[i][j].setValue(Values.EMPTY);
+                            }
                             break;
                         }
-                        whereIsK = k;
-                    }
-                    ktemp = cells[i][whereIsK];
-
-                    if(ktemp.getValue() !=  Values.EMPTY) {
-                        if (ktemp.getValue() == temp.getValue() && !ktemp.isMerged()) {
-                            ktemp.setValue(Values.findByKey(temp.getValue().getNumberOnCell() * 2));
-                            ktemp.setMerged(true);
-                            temp.setValue(Values.EMPTY);
-                            emptyCells--;
-                            score += temp.getValue().getNumberOnCell();
-                        } else {
-                            cells[i][whereIsK + 1].setValue(temp.getValue());
-                            temp.setValue(Values.EMPTY);
+                        if(x == 0 && cells[i][x].getValue() == Values.EMPTY) {
+                            cells[i][x].setValue(cells[i][j].getValue());
+                            cells[i][j].setValue(Values.EMPTY);
+                            break;
                         }
-                    } else {
-                        ktemp.setValue(temp.getValue());
-                        temp.setValue(Values.EMPTY);
                     }
                 }
             }
         }
     }
 
-    private boolean isFail(){
-            final  Cell[][] oldCells = cells;
-            boolean isEquals = false;
+    private void up() {
+        for(int i = 0; i < SIZE; i++){
+            for(int j = 1; j < SIZE; j++) {
 
-            moveCells(KeyEvent.VK_UP);
-            moveCells(KeyEvent.VK_DOWN);
-            moveCells(KeyEvent.VK_LEFT);
-            moveCells(KeyEvent.VK_RIGHT);
+                if(cells[j][i].getValue() != Values.EMPTY){
+                    for (int x = j - 1; x >= 0 ; x--) {
+                        if(cells[x][i].getValue() != Values.EMPTY){
+                            if(cells[x][i].getValue() == cells[j][i].getValue() && !cells[x][i].isMerged()){
+                                cells[x][i].setValue(Values.findByKey(cells[j][i].getValue().getNumberOnCell() * 2));
+                                cells[x][i].setMerged(true);
+                                cells[j][i].setValue(Values.EMPTY);
+                                score += cells[x][i].getValue().numberOnCell;
+                            }
+                            if((cells[x][i].getValue() != cells[j][i].getValue() || cells[x][i].isMerged()) && x + 1 != j){
+                                cells[x + 1][i].setValue(cells[j][i].getValue());
+                                cells[j][i].setValue(Values.EMPTY);
+                            }
+                            break;
+                        }
+                        if(x == 0 && cells[x][i].getValue() == Values.EMPTY) {
+                            cells[x][i].setValue(cells[j][i].getValue());
+                            cells[j][i].setValue(Values.EMPTY);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-            if(Arrays.deepEquals(oldCells, cells))
-                isEquals = true;
-            else
-                cells = oldCells;
-            return isEquals;
+    private boolean endGame(){
+        boolean hasEqualsCells = false;
+        for(int i = 0; i < SIZE - 1; i++)
+            for(int j = 0; j < SIZE - 1; j++){
+                if(cells[i][j].getValue() == cells[i][j + 1].getValue() || cells[j][i].getValue() == cells[i + 1][j].getValue())
+                    hasEqualsCells = true;
+            }
+
+        return !hasEqualsCells;
     }
 
     public Cell[][] getCells(){
@@ -307,5 +222,104 @@ public class Field {
             System.out.println();
         }
     }
-    public void endGame(){}
+
 }
+
+//                 ПОПЫТКА ОБЪЕДИНИТЬ up,down,left,right В ОДНУ ФУНКЦИЮ. ДЛИННО, ЗАПУТАЛАСЬ
+//    private void moveCells2(int key) {
+//        for (int i = 0; i < SIZE; i++) {
+//
+//            if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_UP) {
+//                for (int j = SIZE - 3; j < SIZE; j++) {
+//                    int x, y, t;
+//                    t = j - 1;
+//
+//                    if (key == KeyEvent.VK_LEFT) {
+//                        x = i;
+//                        y = j;
+//                    } else {
+//                        x = j;
+//                        y = i;
+//                    }
+//
+//                    if (cells[x][y].getValue() != Values.EMPTY) {
+//                        for (; t >= 0; t--) {
+//                            if (cells[x][t].getValue() != Values.EMPTY) {
+//                                if (cells[x][t].getValue() == cells[x][y].getValue() && !cells[x][t].isMerged()) {
+//                                    cells[x][t].setValue(Values.findByKey(cells[x][y].getValue().getNumberOnCell() * 2));
+//                                    cells[x][t].setMerged(true);
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                }
+//                                if ((cells[x][t].getValue() != cells[x][y].getValue() || cells[x][y].isMerged()) && t + 1 != y) {
+//                                    cells[x][t + 1].setValue(cells[x][y].getValue());
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                }
+//                                break;
+//                            }
+//                            if (t == 0 && cells[x][t].getValue() == Values.EMPTY) {
+//                                cells[x][t].setValue(cells[x][y].getValue());
+//                                cells[x][y].setValue(Values.EMPTY);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_DOWN) {
+//                for (int j = SIZE - 3; j < SIZE; j++) {
+//                    int x, y, t;
+//                    t = j + 1;
+//
+//                    if (key == KeyEvent.VK_RIGHT) {
+//                        x = i;
+//                        y = j;
+//                    } else {
+//                        x = j;
+//                        y = i;
+//                    }
+//                    if (cells[x][y].getValue() != Values.EMPTY) {
+//                        for (; t < SIZE ; t++) {
+//                            if (key == KeyEvent.VK_DOWN){
+//                            if (cells[t][y].getValue() != Values.EMPTY) {
+//                                if (cells[t][y].getValue() == cells[x][y].getValue() && !cells[t][y].isMerged()) {
+//                                    cells[t][y].setValue(Values.findByKey(cells[x][y].getValue().getNumberOnCell() * 2));
+//                                    cells[t][y].setMerged(true);
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                }
+//                                if ((cells[t][y].getValue() != cells[x][y].getValue() || cells[t][y].isMerged()) && t - 1 != x) {
+//                                    cells[t - 1][y].setValue(cells[x][y].getValue());
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                }
+//                                break;
+//                            }
+//                                if (t == 3 && cells[t][y].getValue() == Values.EMPTY) {
+//                                    cells[t][y].setValue(cells[x][y].getValue());
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                    break;
+//                                }
+//                            } else {
+//                                if (cells[x][t].getValue() != Values.EMPTY) {
+//                                    if (cells[x][t].getValue() == cells[x][y].getValue() && !cells[x][t].isMerged()) {
+//                                        cells[x][t].setValue(Values.findByKey(cells[x][y].getValue().getNumberOnCell() * 2));
+//                                        cells[x][t].setMerged(true);
+//                                        cells[x][y].setValue(Values.EMPTY);
+//                                    }
+//                                    if ((cells[x][t].getValue() != cells[x][y].getValue() || cells[x][t].isMerged()) && t - 1 != y) {
+//                                        cells[x][t - 1].setValue(cells[x][y].getValue());
+//                                        cells[x][y].setValue(Values.EMPTY);
+//                                    }
+//                                    break;
+//                                }
+//                                if (t == 3 && cells[x][t].getValue() == Values.EMPTY) {
+//                                    cells[x][t].setValue(cells[x][y].getValue());
+//                                    cells[x][y].setValue(Values.EMPTY);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }

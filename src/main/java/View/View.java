@@ -1,4 +1,4 @@
-package model;
+package View;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,17 +12,18 @@ import javafx.stage.Stage;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import model.Field;
 
 public class View extends Application {
     private static final int SQUARE_SCALE = 100;
     private static final int STAGE_WIDTH = 410;
-    private static final int STAGE_HEIGHT = 465;
+    private static final int STAGE_HEIGHT = 480;
 
     public static void main(String[] args) {
         Application.launch(args);
     }
 
-    public void createGrids(GridPane gridPane){
+    private void createGrids(GridPane gridPane){
         ColumnConstraints column1 = new ColumnConstraints(100);
         gridPane.getColumnConstraints().add(column1);
         ColumnConstraints column2 = new ColumnConstraints(100);
@@ -32,7 +33,6 @@ public class View extends Application {
         ColumnConstraints column4 = new ColumnConstraints(100);
         gridPane.getColumnConstraints().add(column4);
 
-
         RowConstraints row1 = new RowConstraints(100);
         gridPane.getRowConstraints().add(row1);
         RowConstraints row2 = new RowConstraints(100);
@@ -41,8 +41,6 @@ public class View extends Application {
         gridPane.getRowConstraints().add(row3);
         RowConstraints row4 = new RowConstraints(100);
         gridPane.getRowConstraints().add(row4);
-
-        gridPane.setGridLinesVisible(true);
     }
 
     @Override
@@ -66,15 +64,17 @@ public class View extends Application {
 
         createGrids(gridPane);
 
-        for (int j = 0; j < field.SIZE; j++)
-            for (int i = 0; i < field.SIZE; i++) {
+        Text message = new Text("Score: " + Integer.toString(field.score));
+        root.setTop(message);
+
+        for (int j = 0; j < Field.SIZE; j++)
+            for (int i = 0; i < Field.SIZE; i++) {
                 if (!field.getCells()[j][i].isEmpty())
                     gridPane.add(new Tile(field.getCells()[j][i].getValue().getNumberOnCell()), i, j);
             }
         field.printField();
 
         Scene scene = new Scene(root, 400, 400);
-
         scene.setOnKeyPressed(event -> {
             if ((event.getCode().equals(KeyCode.UP) ||
                     event.getCode().equals(KeyCode.DOWN) ||
@@ -84,15 +84,20 @@ public class View extends Application {
                 field.moveCells(event.getCode().getCode());
             gridPane.getChildren().clear();
             createGrids(gridPane);
-            for (int j = 0; j < field.SIZE; j++)
-                for (int i = 0; i < field.SIZE; i++){
+            field.emptyCells = 0;
+            for (int j = 0; j < Field.SIZE; j++)
+                for (int i = 0; i < Field.SIZE; i++){
                     if (!field.getCells()[j][i].isEmpty()) {
                         Tile tile = new Tile(field.getCells()[j][i].getValue().getNumberOnCell());
                         gridPane.add(tile, i, j);
+                        field.emptyCells++;
                     }
                 }
-            gridPane.setGridLinesVisible(true);
-            field.printField();
+                Text message2 = new Text("Score: " + Integer.toString(field.score));
+                root.setTop(message2);
+
+                if(field.isFail){
+                }
             }
         });
 
@@ -105,13 +110,13 @@ public class View extends Application {
 
     private class Tile extends StackPane {
         private int value;
-        private Rectangle rect = new Rectangle(SQUARE_SCALE, SQUARE_SCALE);
-        private Text text = new Text();
 
-        public Tile(int value) {
+        Tile(int value) {
             this.value = value;
+            Rectangle rect = new Rectangle(SQUARE_SCALE, SQUARE_SCALE);
             rect.setStroke(Color.ROSYBROWN);
             rect.setFill(Color.THISTLE);
+            Text text = new Text();
             text.setText(Integer.toString(value));
             text.setFont(Font.font("Verdana", 50));
             text.setFill(Color.INDIGO);
@@ -120,8 +125,5 @@ public class View extends Application {
     }
 }
 /*
- * строка со счётом или сообщением о выигрыше/проигрыше
- * изменение состояния поля
- * переделать isFail()*
- * переместить View
+ *
  * */

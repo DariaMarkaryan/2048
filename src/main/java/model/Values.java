@@ -22,7 +22,7 @@ public enum Values {
         this.numberOnCell = numberOnCell;
     }
 
-    int getNumberOnCell(){
+    public int getNumberOnCell(){
 
         return numberOnCell;
     }

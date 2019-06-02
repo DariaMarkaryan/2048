@@ -4,16 +4,16 @@ public class Cell {
     private Values value;
     private boolean isMerged = false;
 
-    public Cell(Values value){
+    Cell(Values value){
         this.value = value;
     }
 
-    public void setMerged(boolean status) {
+    void setMerged(boolean status) {
 
         this.isMerged = status;
     }
 
-    public boolean isMerged() {
+    boolean isMerged() {
 
         return isMerged;
     }
@@ -23,12 +23,11 @@ public class Cell {
         return value;
     }
 
-    public void setValue(Values value) throws IllegalArgumentException {
+    void setValue(Values value) throws IllegalArgumentException {
         this.value = value;
     }
 
     public boolean isEmpty() {
-
         return this.value == Values.EMPTY;
     }
 }
