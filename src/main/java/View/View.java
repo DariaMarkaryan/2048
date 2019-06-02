@@ -1,6 +1,9 @@
 package View;
 
 import javafx.application.Application;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -13,6 +16,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import model.Field;
+import static model.Field.SIZE;
 
 public class View extends Application {
     private static final int SQUARE_SCALE = 100;
@@ -51,28 +55,24 @@ public class View extends Application {
         GridPane gridPane = new GridPane();
 
         root.setCenter(gridPane);
-
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Game");
+        Menu scorePlace = new Menu("score = " + field.score);
 
         MenuItem newGameItem = new MenuItem("New Game");
         MenuItem replayItem = new MenuItem("Replay");
 
         root.setTop(menuBar);
         menu.getItems().addAll(newGameItem, replayItem);
-        menuBar.getMenus().add(menu);
+        menuBar.getMenus().addAll(menu, scorePlace);
 
         createGrids(gridPane);
 
-        Text message = new Text("Score: " + Integer.toString(field.score));
-        root.setTop(message);
-
-        for (int j = 0; j < Field.SIZE; j++)
-            for (int i = 0; i < Field.SIZE; i++) {
+        for (int j = 0; j < SIZE; j++)
+            for (int i = 0; i < SIZE; i++) {
                 if (!field.getCells()[j][i].isEmpty())
                     gridPane.add(new Tile(field.getCells()[j][i].getValue().getNumberOnCell()), i, j);
             }
-        field.printField();
 
         Scene scene = new Scene(root, 400, 400);
         scene.setOnKeyPressed(event -> {
@@ -80,23 +80,35 @@ public class View extends Application {
                     event.getCode().equals(KeyCode.DOWN) ||
                     event.getCode().equals(KeyCode.LEFT) ||
                     event.getCode().equals(KeyCode.RIGHT))){
+                field.emptyCells = SIZE * SIZE;
 
+                for (int j = 0; j < SIZE; j++)
+                    for (int i = 0; i < SIZE; i++) {
+                        if (!field.getCells()[j][i].isEmpty()) {
+                            field.emptyCells--;
+                        }
+                    }
                 field.moveCells(event.getCode().getCode());
-            gridPane.getChildren().clear();
+
+                gridPane.getChildren().clear();
             createGrids(gridPane);
-            field.emptyCells = 0;
-            for (int j = 0; j < Field.SIZE; j++)
-                for (int i = 0; i < Field.SIZE; i++){
+
+            field.emptyCells = SIZE * SIZE;
+            for (int j = 0; j < SIZE; j++)
+                for (int i = 0; i < SIZE; i++){
                     if (!field.getCells()[j][i].isEmpty()) {
                         Tile tile = new Tile(field.getCells()[j][i].getValue().getNumberOnCell());
                         gridPane.add(tile, i, j);
-                        field.emptyCells++;
+                        field.emptyCells--;
                     }
                 }
-                Text message2 = new Text("Score: " + Integer.toString(field.score));
-                root.setTop(message2);
+                System.out.println(field.emptyCells);
+                root.getChildren().remove(scorePlace);
+                scorePlace.setText("score = " + field.score);
 
                 if(field.isFail){
+                    root.getChildren().remove(scorePlace);
+                    scorePlace.setText("you're failed. Please restart");
                 }
             }
         });
